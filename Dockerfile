@@ -14,7 +14,7 @@ RUN apt-get install -y --no-install-recommends \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libpng-dev \
-        && docker-php-ext-configure gd
+        && docker-php-ext-configure gd \
         && docker-php-ext-install gd
 
 # zip extension
