@@ -5,22 +5,21 @@ FROM php:8.3-apache
 RUN apt-get update -y && apt-get upgrade -y
 
 # install libs
-RUN apt-get install -y \
-        freetype-dev \
-        libjpeg-turbo-dev \
-        libpng-dev \
-        gettext-dev \
-        gmp-dev \
-        icu-dev \
-        libxml2-dev \
-        libzip-dev
+RUN apt-get install -y freetype-dev
+RUN apt-get install -y libjpeg-turbo-dev
+RUN apt-get install -y libpng-dev
+RUN apt-get install -y gettext-dev
+RUN apt-get install -y gmp-dev
+RUN apt-get install -y icu-dev
+RUN apt-get install -y libxml2-dev
+RUN apt-get install -y libzip-dev
+RUN apt-get install -y zip
 
 # GD extension
 RUN apt-get install -y \
         freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev \
         && docker-php-ext-configure gd \
         && docker-php-ext-install gd
-
 
 # zip extension
 RUN docker-php-ext-configure zip && docker-php-ext-install zip
@@ -51,9 +50,8 @@ RUN a2enmod rewrite
 RUN sed -ri -e "s!${WORKDIR}!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-available/*.conf
 # https://www.tenable.com/audits/items/CIS_Apache_HTTP_Server_2.4_Benchmark_v2.0.0_Level_1.audit:3e40bb6b17d51e608448449f08a3b496
 RUN usermod --append --groups root www-data \
- && usermod --append --groups www-data root \
- && chmod ug+rwX -R /tmp \
-;
+        && usermod --append --groups www-data root \
+        && chmod 0777 -R /tmp
 
 # PHP
 RUN echo "memory_limit = 512M" > "${PHP_INI_DIR}/conf.d/memory_limit.ini"
