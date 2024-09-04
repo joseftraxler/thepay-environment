@@ -5,9 +5,10 @@ FROM php:8.3-apache
 RUN apt-get update -y && apt-get upgrade -y
 
 # install libs
-RUN apt-get install -y libxml2-dev
-RUN apt-get install -y libzip-dev
-RUN apt-get install -y zip
+RUN apt-get install -y \
+        libxml2-dev \
+        libzip-dev \
+        zip
 
 # GD extension
 RUN apt-get install -y --no-install-recommends \
@@ -26,14 +27,13 @@ RUN docker-php-ext-configure bcmath --enable-bcmath && docker-php-ext-install bc
 RUN docker-php-ext-install sockets && docker-php-ext-configure sockets && docker-php-ext-enable sockets
 
 # install php extensions
-RUN docker-php-ext-install \
-    mbstring \
-    pdo \
-    pdo_mysql \
-    soap \
-    intl \
-    sysvsem \
-    calendar
+RUN docker-php-ext-install mbstring
+RUN docker-php-ext-install pdo
+RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install soap
+RUN docker-php-ext-install intl
+RUN docker-php-ext-install sysvsem
+RUN docker-php-ext-install calendar
 
 ENV WORKDIR="/var/www/html"
 WORKDIR "${WORKDIR}"
