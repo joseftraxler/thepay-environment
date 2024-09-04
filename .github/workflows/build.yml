@@ -15,7 +15,7 @@ jobs:
             username: ${{secrets.DOCKERHUB_USERNAME}}
             password: ${{secrets.DOCKERHUB_PASSWORD}}
           run: |
-            docker login -u $username -p $password 
+            echo "$password" | docker login --username $username --password-stdin
         - name: Build the docker image
           id: build-docker-image
           run: |
