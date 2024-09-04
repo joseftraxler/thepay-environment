@@ -2,10 +2,10 @@
 # hadolint global ignore=DL3059
 FROM php:8.3-apache
 
-RUN apk update && apk upgrade
+RUN apt-get update -y && apt-get upgrade -y
 
 # install libs
-RUN apk add --update --no-cache --virtual .deps \
+RUN apt-get install -y \
         freetype-dev \
         libjpeg-turbo-dev \
         libpng-dev \
@@ -16,11 +16,10 @@ RUN apk add --update --no-cache --virtual .deps \
         libzip-dev
 
 # GD extension
-RUN apk add --no-cache freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev && \
-  docker-php-ext-configure gd \
-  && NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
-  docker-php-ext-install -j${NPROC} gd && \
-  apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev
+RUN apt-get install -y \
+        freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev \
+        && docker-php-ext-configure gd \
+        && docker-php-ext-install gd
 
 
 # zip extension
