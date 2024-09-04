@@ -4,41 +4,39 @@ FROM php:8.3-apache
 
 RUN apt-get update -y && apt-get upgrade -y
 
-# install libs
-RUN apt-get install -y \
-        libxml2-dev \
-        libzip-dev \
-        zip
-
-# GD extension
-RUN apt-get install -y --no-install-recommends \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libpng-dev \
-        && docker-php-ext-configure gd \
-        && docker-php-ext-install gd
+# xml extensions
+RUN apt-get install -y --no-install-recommends libxml2-dev \
+    && docker-php-ext-install simplexml xml
 
 # zip extension
-RUN docker-php-ext-configure zip && docker-php-ext-install zip
+RUN apt-get install -y --no-install-recommends libzip-dev zip \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install zip
 
-# bcmath extension
-RUN docker-php-ext-configure bcmath --enable-bcmath && docker-php-ext-install bcmath
+# mbstring extension
+RUN apt-get install -y libonig-dev \
+    && docker-php-ext-install mbstring
 
-RUN docker-php-ext-install sockets && docker-php-ext-configure sockets && docker-php-ext-enable sockets
+# GD extension
+RUN apt-get install -y --no-install-recommends libfreetype6-dev  libjpeg62-turbo-dev libpng-dev \
+        && docker-php-ext-configure gd --enable-gd \
+        && docker-php-ext-install gd
 
-# install php extensions
-RUN docker-php-ext-install mbstring
-RUN docker-php-ext-install pdo
-RUN docker-php-ext-install pdo_mysql
-RUN docker-php-ext-install soap
-RUN docker-php-ext-install intl
-RUN docker-php-ext-install sysvsem
-RUN docker-php-ext-install calendar
+RUN docker-php-ext-configure bcmath --enable-bcmath \
+    && docker-php-ext-install bcmath
+
+# Other php extensions
+RUN docker-php-ext-install pdo \
+    pdo_mysql \
+    soap \
+    intl \
+    sysvsem \
+    calendar
 
 ENV WORKDIR="/var/www/html"
 WORKDIR "${WORKDIR}"
 
-# Apache
+# Configure APACHE
 HEALTHCHECK --interval=30s CMD curl --fail http://localhost/  # TODO --start-interval=15s --interval=5m
 ENV APACHE_DOCUMENT_ROOT="${WORKDIR}/public"
 RUN a2enmod rewrite
