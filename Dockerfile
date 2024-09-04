@@ -5,20 +5,16 @@ FROM php:8.3-apache
 RUN apt-get update -y && apt-get upgrade -y
 
 # install libs
-RUN apt-get install -y freetype-dev
-RUN apt-get install -y libjpeg-turbo-dev
-RUN apt-get install -y libpng-dev
-RUN apt-get install -y gettext-dev
-RUN apt-get install -y gmp-dev
-RUN apt-get install -y icu-dev
 RUN apt-get install -y libxml2-dev
 RUN apt-get install -y libzip-dev
 RUN apt-get install -y zip
 
 # GD extension
-RUN apt-get install -y \
-        freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev \
-        && docker-php-ext-configure gd \
+RUN apt-get install -y --no-install-recommends \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+        && docker-php-ext-configure gd
         && docker-php-ext-install gd
 
 # zip extension
