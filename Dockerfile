@@ -77,4 +77,4 @@ RUN apt-get install -y libstdc++6
 COPY --from=node:16.20.1 /usr/local/bin /usr/local/bin
 COPY --from=node:16.20.1 /usr/local/lib/node_modules /usr/local/lib/node_modules
 
-RUN npm i npm@6.14.4 -g --no-audit --progress=false
+RUN npm i npm@^9.9.3 -g --no-audit --progress=false
