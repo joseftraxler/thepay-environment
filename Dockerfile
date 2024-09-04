@@ -4,6 +4,9 @@ FROM php:8.3-apache
 
 RUN apt-get update -y && apt-get upgrade -y
 
+# Install requirements
+RUN apt-get install -y git
+
 # xml extensions
 RUN apt-get install -y --no-install-recommends libxml2-dev \
     && docker-php-ext-install simplexml xml
