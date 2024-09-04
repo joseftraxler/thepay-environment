@@ -10,7 +10,6 @@ RUN apt-get install -y --no-install-recommends libxml2-dev \
 
 # zip extension
 RUN apt-get install -y --no-install-recommends libzip-dev zip \
-    && docker-php-ext-configure zip \
     && docker-php-ext-install zip
 
 # mbstring extension
@@ -19,19 +18,34 @@ RUN apt-get install -y libonig-dev \
 
 # GD extension
 RUN apt-get install -y --no-install-recommends libfreetype6-dev  libjpeg62-turbo-dev libpng-dev \
-        && docker-php-ext-configure gd --enable-gd \
         && docker-php-ext-install gd
 
-RUN docker-php-ext-configure bcmath --enable-bcmath \
-    && docker-php-ext-install bcmath
+RUN docker-php-ext-install bcmath
 
 # Other php extensions
-RUN docker-php-ext-install pdo \
+RUN docker-php-ext-install \
+    pdo \
     pdo_mysql \
     soap \
     intl \
     sysvsem \
-    calendar
+    calendar \
+    sockets
+
+RUN docker-php-ext-enable \
+    gd \
+    bcmath \
+    mbstring \
+    pdo \
+    pdo_mysql \
+    soap \
+    intl \
+    sysvsem \
+    calendar \
+    sockets \
+    zip \
+    xml \
+    simplexml
 
 ENV WORKDIR="/var/www/html"
 WORKDIR "${WORKDIR}"
