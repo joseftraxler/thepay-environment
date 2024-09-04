@@ -5,7 +5,9 @@ FROM php:8.3-apache
 RUN apt-get update -y && apt-get upgrade -y
 
 # Install requirements
-RUN apt-get install -y git
+RUN apt-get install -y \
+    git \
+    openssh-client
 
 # xml extensions
 RUN apt-get install -y --no-install-recommends libxml2-dev \
@@ -67,9 +69,12 @@ RUN usermod --append --groups root www-data \
 # PHP
 RUN echo "memory_limit = 512M" > "${PHP_INI_DIR}/conf.d/memory_limit.ini"
 
-# --> install composer
+# install composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
-# --> get node & npm from node image
-COPY --from=node:lts-alpine /usr/local/bin /usr/local/bin
-COPY --from=node:lts-alpine /usr/local/lib/node_modules /usr/local/lib/node_modules
+# Get NodeJS & NPM from node image
+RUN apt-get install -y libstdc++6
+COPY --from=node:16.20.1 /usr/local/bin /usr/local/bin
+COPY --from=node:16.20.1 /usr/local/lib/node_modules /usr/local/lib/node_modules
+
+RUN npm i npm@6.14.4 -g --no-audit --progress=false
