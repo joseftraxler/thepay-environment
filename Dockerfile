@@ -2,6 +2,45 @@
 # hadolint global ignore=DL3059
 FROM php:8.3-apache
 
+RUN apk update && apk upgrade
+
+# install libs
+RUN apk add --update --no-cache --virtual .deps \
+        freetype-dev \
+        libjpeg-turbo-dev \
+        libpng-dev \
+        gettext-dev \
+        gmp-dev \
+        icu-dev \
+        libxml2-dev \
+        libzip-dev
+
+# GD extension
+RUN apk add --no-cache freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev && \
+  docker-php-ext-configure gd \
+  && NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
+  docker-php-ext-install -j${NPROC} gd && \
+  apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev
+
+
+# zip extension
+RUN docker-php-ext-configure zip && docker-php-ext-install zip
+
+# bcmath extension
+RUN docker-php-ext-configure bcmath --enable-bcmath && docker-php-ext-install bcmath
+
+RUN docker-php-ext-install sockets && docker-php-ext-configure sockets && docker-php-ext-enable sockets
+
+# install php extensions
+RUN docker-php-ext-install \
+    mbstring \
+    pdo \
+    pdo_mysql \
+    soap \
+    intl \
+    sysvsem \
+    calendar
+
 ENV WORKDIR="/var/www/html"
 WORKDIR "${WORKDIR}"
 
