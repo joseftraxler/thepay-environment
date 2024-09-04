@@ -1,3 +1,3 @@
 # thepay-environment
 
-Docker image based on PHP 8.2 with apache2
+Docker image based on PHP 8.3 with apache2
