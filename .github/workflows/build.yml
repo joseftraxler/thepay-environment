@@ -13,6 +13,7 @@ on:
       - main
     paths:
       - "*/Dockerfile"
+      - ".github/workflows/build.yml"
 jobs:
   setup:
     name: Setup
@@ -26,9 +27,9 @@ jobs:
       - name: Detecting versions to build
         id: detected-versions
         run: |
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | echo
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "php.*/Dockerfile" | xargs -r dirname | echo
-          echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "php.*/Dockerfile" | xargs -r dirname | echo; fi)" >> $GITHUB_OUTPUT
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "php.*/Dockerfile" | xargs -r dirname
+          echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "php.*/Dockerfile" | xargs -r dirname; fi)" >> $GITHUB_OUTPUT
 
   build:
     name: Build & push docker images
