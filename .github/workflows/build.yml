@@ -1,18 +1,31 @@
 name: Build Docker Image
 on:
   workflow_dispatch:
-    
+    inputs:
+      version:
+        type: choice
+        description: Docker version
+        options:
+          - php8.2-v1
+          - php8.3-v1
   push:
     branches:
       - main
     paths:
-      - "Dockerfile"
+      - "*/Dockerfile"
 jobs:
     build:
       name: push docker image to docker hub
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
+          with:
+            ref: main
+
+        - name: Detecting versions to build
+          id: detected-versions
+          run: echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff origin/main --name-only | grep "php.*/Dockerfile | xargs dirname | uniq | xargs echo; fi)" >> $GITHUB_OUTPUT
+
         - name: Login to docker hub
           id: docker-hub
           env:
@@ -22,12 +35,10 @@ jobs:
             echo "$password" | docker login --username $username --password-stdin
         - name: Build the docker image
           id: build-docker-image
-          run: |
-            ls -la 
-            docker build . -f Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:8.3
+          run: echo steps.detected-versions.outputs.versions | xargs -I {} docker build . -f {}/Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:{}
         - name: Push the docker image
           id: push-docker-image
-          run: docker push ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:8.3
+          run: echo steps.detected-versions.outputs.versions | xargs -I {} docker push ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:{}
         - name: Logout from docker hub & clear credentials
           run: |
             docker logout

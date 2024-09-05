@@ -1,6 +1,6 @@
 # Basic environment for managing projects and running hello world
 # hadolint global ignore=DL3059
-FROM php:8.3-apache
+FROM php:8.2-apache
 
 RUN apt-get update -y && apt-get upgrade -y
 
@@ -74,7 +74,7 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
 # Get NodeJS & NPM from node image
 RUN apt-get install -y libstdc++6
-COPY --from=node:16.20.1 /usr/local/bin /usr/local/bin
-COPY --from=node:16.20.1 /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node:16.17.0 /usr/local/bin /usr/local/bin
+COPY --from=node:16.17.0 /usr/local/lib/node_modules /usr/local/lib/node_modules
 
-RUN npm i npm@^9.9.3 -g --no-audit --progress=false
+RUN npm i npm@^8.15.0 -g --no-audit --progress=false
