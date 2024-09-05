@@ -37,8 +37,11 @@ jobs:
               | xargs echo
             );
           fi
-          echo "versions=$(echo "${v}" | jq --raw-input | jq --slurp)"
-          echo "versions=$(echo "${v}" | jq --raw-input | jq --slurp)" >> $GITHUB_OUTPUT
+          echo 'v variable is:'
+          echo "${v}"
+          echo 'versions variable output:'
+          echo "versions=$(echo \"${v}\" | jq --raw-input | jq --slurp)"
+          echo "versions=$(echo \"${v}\" | jq --raw-input | jq --slurp)" >> $GITHUB_OUTPUT
 
   build:
     name: Build & push docker images
