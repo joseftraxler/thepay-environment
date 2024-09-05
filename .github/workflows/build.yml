@@ -32,7 +32,6 @@ jobs:
           | xargs -r dirname
           | jq --raw-input
           | jq --slurp
-          | xargs echo
           )"
           && echo "versions=$(
           git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
@@ -40,7 +39,6 @@ jobs:
           | xargs -r dirname
           | jq --raw-input
           | jq --slurp
-          | xargs echo
           )" >> $GITHUB_OUTPUT
 
   build:
