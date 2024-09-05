@@ -26,13 +26,16 @@ jobs:
       - name: Detecting versions to build
         id: detect-versions
         run: |
+          if [[ -v github.event.inputs.version ]]; then
+          VERSIONS=$(echo ${{ github.event.inputs.version }} | jq --raw-input | jq --slurp)
+          else
           VERSIONS=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} \
             | grep "^php.*/Dockerfile$"\
             | xargs -r dirname\
             | jq --raw-input\
             | jq --slurp\
           )
-          echo "$VERSIONS"
+          fi
           echo "out=$(jq -cn --argjson versions "$VERSIONS" '{version: $versions}')" >> $GITHUB_OUTPUT
 
   build:
@@ -52,7 +55,7 @@ jobs:
           echo "$password" | docker login --username $username --password-stdin
       - name: Build the docker image
         id: build-docker-image
-        run: echo steps.detected-versions.outputs.versions | xargs -I {} docker build . -f ${{ matrix.version }}/Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:${{ matrix.version }}
+        run: docker build . -f ${{ matrix.version }}/Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:${{ matrix.version }}
       - name: Push the docker image
         id: push-docker-image
         run: docker push ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:${{ matrix.version }}
