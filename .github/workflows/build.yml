@@ -38,7 +38,7 @@ jobs:
         run: >
           echo "Versions:"
           && echo "${{ toJson(steps.detect-versions) }}"
-          && echo $(echo "${{ steps.detect-versions.outputs.versions }}" | jq --raw-input | jq --slurp | xargs echo)
+          && echo toJson(steps.detect-versions.outputs.versions)
           && echo "writing to output..."
           && echo 'json=toJson(steps.detect-versions.outputs.versions)' >> $GITHUB_OUTPUT
 
