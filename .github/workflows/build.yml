@@ -25,21 +25,15 @@ jobs:
           fetch-depth: 0
       - name: Detecting versions to build
         id: detect-versions
-        run: >
-          echo "$(
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
-          | grep "^php.*/Dockerfile$"
-          | xargs -r dirname
-          | jq --raw-input
-          | jq --slurp
-          )"
-          && echo "versions=$(
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
-          | grep "^php.*/Dockerfile$"
-          | xargs -r dirname
-          | jq --raw-input
-          | jq --slurp
-          )" >> $GITHUB_OUTPUT
+        run: |
+          VERSIONS=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} \
+            | grep "^php.*/Dockerfile$"\
+            | xargs -r dirname\
+            | jq --raw-input\
+            | jq --slurp\
+          )
+          echo "$VERSIONS"
+          && echo "versions=$VERSIONS" >> $GITHUB_OUTPUT
 
   build:
     name: Build & push docker images
