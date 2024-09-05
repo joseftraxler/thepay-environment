@@ -13,7 +13,6 @@ on:
       - main
     paths:
       - "*/Dockerfile"
-      - ".github/workflows/build.yml"
 jobs:
     build:
       name: push docker image to docker hub
