@@ -21,13 +21,13 @@ jobs:
       steps:
         - uses: actions/checkout@v4
           with:
-            ref: main
+            fetch-depth: 0
 
         - name: Detecting versions to build
           id: detected-versions
           run: |
-            echo "${git diff origin/main}"
-            echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff origin/main --name-only | grep "php.*/Dockerfile" | xargs -r dirname | uniq | echo; fi)" >> $GITHUB_OUTPUT
+            git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+            echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "php.*/Dockerfile" | xargs -r dirname | uniq | echo; fi)" >> $GITHUB_OUTPUT
 
         - name: Login to docker hub
           if: steps.detected-versions.outputs.versions
