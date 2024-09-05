@@ -28,9 +28,11 @@ jobs:
         run: |
           echo ${{ github.event.inputs.version }}
           if [[ -v github.event.inputs.version ]]; then
-          VERSIONS=$(echo ${{ github.event.inputs.version }} | jq --raw-input | jq --slurp)
+          echo "versions detected by input"\
+          && VERSIONS=$(echo ${{ github.event.inputs.version }} | jq --raw-input | jq --slurp)
           else
-          VERSIONS=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} \
+          echo "versions detected by changelog"\
+          && VERSIONS=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} \
             | grep "^php.*/Dockerfile$"\
             | xargs -r dirname\
             | jq --raw-input\
