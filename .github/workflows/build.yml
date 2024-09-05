@@ -28,7 +28,7 @@ jobs:
         run: |
           echo "${{ toJSON(github.event.inputs) }}"
           if [[ -v github.event.inputs.version ]]; then
-            v=github.event.inputs.version;
+            v="${{ github.event.inputs.version }}";
           else
             v=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "^php.*/Dockerfile$" | xargs -r dirname);
           fi
