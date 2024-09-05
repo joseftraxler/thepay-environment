@@ -28,7 +28,7 @@ jobs:
         id: detected-versions
         run: |
           git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "php.*/Dockerfile" | xargs -r dirname
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "php.*/Dockerfile"
           echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "php.*/Dockerfile" | xargs -r dirname; fi)" >> $GITHUB_OUTPUT
 
   build:
