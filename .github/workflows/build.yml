@@ -27,10 +27,10 @@ jobs:
         id: detect-versions
         run: >
           echo "versions=$(
-            git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
-            | grep "^php.*/Dockerfile$"
-            | xargs -r dirname
-            | xargs echo
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+          | grep "^php.*/Dockerfile$"
+          | xargs -r dirname
+          | xargs echo
           )" >> $GITHUB_OUTPUT
 
       - name: Convert to JSON
