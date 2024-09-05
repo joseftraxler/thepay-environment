@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 0
       - name: Detecting versions to build
         id: detect-versions
-        run: echo "versions=$(if [[ -v github.event.inputs.version ]] then echo \"${{ github.event.inputs.version }}\" else echo $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep \"^php.*/Dockerfile$\" | xargs -r dirname) fi)" >> $GITHUB_OUTPUT
+        run: echo "versions=$(if [[ -v github.event.inputs.version ]]; then echo \"${{ github.event.inputs.version }}\" else echo $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep \"^php.*/Dockerfile$\" | xargs -r dirname) fi)" >> $GITHUB_OUTPUT
 
       - name: Convert to JSON
         id: versions-as-json
