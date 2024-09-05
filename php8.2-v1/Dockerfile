@@ -33,6 +33,7 @@ RUN docker-php-ext-install \
     pdo_mysql \
     soap \
     intl \
+    ftp \
     sysvsem \
     calendar \
     sockets
@@ -45,6 +46,7 @@ RUN docker-php-ext-enable \
     pdo_mysql \
     soap \
     intl \
+    ftp \
     sysvsem \
     calendar \
     sockets \
