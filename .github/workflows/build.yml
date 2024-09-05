@@ -27,24 +27,18 @@ jobs:
         id: detected-versions
         run: |
           if [[ -v github.event.inputs.version ]]; then
-            echo 'versions=["${github.event.inputs.version}"]' >> $GITHUB_OUTPUT;
+            v="${github.event.inputs.version}";
           else
-            echo "git diff"
-            && echo $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
-            && v=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "^php.*/Dockerfile$" | xargs -r dirname)
-            && echo "changed versions after filter"
-            && echo "$v"
-            && echo "writing into versions..."
-            && echo 'versions=$(echo "$v" | jq --raw-input | jq --slurp | xargs echo)' >> $GITHUB_OUTPUT;
+            v=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "^php.*/Dockerfile$" | xargs -r dirname)
           fi
-
+          echo 'versions=$(echo "$v" | jq --raw-input | jq --slurp | xargs echo)' >> $GITHUB_OUTPUT;
   build:
     name: Build & push docker images
     runs-on: ubuntu-latest
     needs: setup
     strategy:
       matrix:
-        versions: ${{ fromJson(needs.setup.outputs.versions) }}
+        version: ${{ fromJson(needs.setup.outputs.versions) }}
     steps:
       - uses: actions/checkout@v4
       - name: Login to docker hub
@@ -56,10 +50,10 @@ jobs:
           echo "$password" | docker login --username $username --password-stdin
       - name: Build the docker image
         id: build-docker-image
-        run: echo steps.detected-versions.outputs.versions | xargs -I {} docker build . -f {}/Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:{}
+        run: echo steps.detected-versions.outputs.versions | xargs -I {} docker build . -f ${{ matrix.version }}/Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:${{ matrix.version }}
       - name: Push the docker image
         id: push-docker-image
-        run: echo steps.detected-versions.outputs.versions | xargs -I {} docker push ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:{}
+        run: docker push ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:${{ matrix.version }}
       - name: Logout from docker hub & clear credentials
         run: |
           docker logout
