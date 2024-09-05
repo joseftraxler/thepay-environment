@@ -28,20 +28,24 @@ jobs:
         id: detected-versions
         run: |
           if [[ -v inputs.version ]]; then
-            v=inputs.version;
+            echo 'versions=["${inputs.version}"]' >> $GITHUB_OUTPUT;
           else
-            v=$(
-              git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
-              | grep "^php.*/Dockerfile$"
-              | xargs -r dirname
+            echo "git diff"
+            echo $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
+            echo "git diff after filter"
+            echo $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "^php.*/Dockerfile$" | xargs -r dirname)
+            echo "versions=$(
+              echo $(
+                git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+                | grep "^php.*/Dockerfile$"
+                | xargs -r dirname
+                | xargs echo
+              )
+              | jq --raw-input
+              | jq --slurp
               | xargs echo
-            );
+            ) >> $GITHUB_OUTPUT;
           fi
-          echo 'v variable is:'
-          echo "${v}"
-          echo 'versions variable output:'
-          echo "versions=$(echo \"${v}\" | jq --raw-input | jq --slurp)"
-          echo "versions=$(echo \"${v}\" | jq --raw-input | jq --slurp)" >> $GITHUB_OUTPUT
 
   build:
     name: Build & push docker images
