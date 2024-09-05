@@ -32,14 +32,14 @@ jobs:
           else
             echo "git diff"
             echo $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
-            echo "git diff after filter"
+            echo "changed versions after filter"
             echo $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "^php.*/Dockerfile$" | xargs -r dirname)
+            echo "writing into versions..."
             echo 'versions=$(
               echo $(
                 git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
                 | grep "^php.*/Dockerfile$"
                 | xargs -r dirname
-                | xargs echo
               )
               | jq --raw-input
               | jq --slurp
