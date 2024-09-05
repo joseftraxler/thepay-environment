@@ -26,7 +26,7 @@ jobs:
       - name: Detecting versions to build
         id: detect-versions
         run: |
-          if [[ "${{ github.event.inputs.version }} != "" ]]; then
+          if [[ "${{ github.event.inputs.version }}" != "" ]]; then
           echo "versions detected by input"\
           && VERSIONS=$(echo ${{ github.event.inputs.version }} | jq --raw-input | jq --slurp)
           else
