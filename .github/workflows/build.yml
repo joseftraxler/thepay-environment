@@ -26,7 +26,7 @@ jobs:
       - name: Detecting versions to build
         id: detected-versions
         run: |
-          echo $(github.event.inputs)
+          echo "${{ toJSON(github.event.inputs) }}"
           if [[ -v github.event.inputs.version ]]; then
             v=github.event.inputs.version;
           else
