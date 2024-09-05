@@ -6,8 +6,8 @@ on:
         type: choice
         description: Docker version
         options:
-          - php8.2-v1
           - php8.3-v1
+          - php8.2-v1
   push:
     branches:
       - main
@@ -42,7 +42,7 @@ jobs:
           echo "out=$(jq -cn --argjson versions "$VERSIONS" '{version: $versions}')" >> $GITHUB_OUTPUT
 
   build:
-    name: Build & push docker images
+    name: Build & push
     runs-on: ubuntu-latest
     needs: setup
     strategy:
