@@ -25,15 +25,14 @@ jobs:
           fetch-depth: 0
       - name: Detecting versions to build
         id: detect-versions
-        run: |
-          echo "${{ toJSON(github.event.inputs) }}"
+        run: >
           echo 'versions=$(
             if [[ -v github.event.inputs.version ]]; then
               echo "${{ github.event.inputs.version }};
             else
               echo $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "^php.*/Dockerfile$" | xargs -r dirname);
             fi
-          )' >> $GITHUB_OUTPUT;
+          )' >> $GITHUB_OUTPUT
       - name: Convert to JSON
         id: versions-as-json
         run: |
@@ -41,7 +40,7 @@ jobs:
           echo "${{ steps.detect-versions.outputs.versions }}"
           echo $(echo "${{ steps.detect-versions.outputs.versions }}" | jq --raw-input | jq --slurp | xargs echo)
           echo "writing to output..."
-          echo 'json=$(echo "${{ steps.detect-versions.outputs.versions }}" | jq --raw-input | jq --slurp | xargs echo)' >> $GITHUB_OUTPUT;
+          echo 'json=$(echo "${{ steps.detect-versions.outputs.versions }}" | jq --raw-input | jq --slurp | xargs echo)' >> $GITHUB_OUTPUT
 
   build:
     name: Build & push docker images
