@@ -24,9 +24,10 @@ jobs:
 
         - name: Detecting versions to build
           id: detected-versions
-          run: echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff origin/main --name-only | grep "php.*/Dockerfile | xargs dirname | uniq | xargs echo; fi)" >> $GITHUB_OUTPUT
+          run: echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff origin/main --name-only | grep "php.*/Dockerfile" | xargs -r dirname | uniq | echo; fi)" >> $GITHUB_OUTPUT
 
         - name: Login to docker hub
+          if: steps.detected-versions.outputs.versions
           id: docker-hub
           env:
             username: ${{secrets.DOCKERHUB_USERNAME}}
@@ -34,12 +35,15 @@ jobs:
           run: |
             echo "$password" | docker login --username $username --password-stdin
         - name: Build the docker image
+          if: steps.detected-versions.outputs.versions
           id: build-docker-image
           run: echo steps.detected-versions.outputs.versions | xargs -I {} docker build . -f {}/Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:{}
         - name: Push the docker image
+          if: steps.detected-versions.outputs.versions
           id: push-docker-image
           run: echo steps.detected-versions.outputs.versions | xargs -I {} docker push ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:{}
         - name: Logout from docker hub & clear credentials
+          if: steps.detected-versions.outputs.versions
           run: |
             docker logout
             rm $HOME/.docker/config.json
