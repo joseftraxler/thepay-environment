@@ -32,7 +32,7 @@ jobs:
           else
             v=git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "^php.*/Dockerfile$" | xargs -r dirname;
           fi
-          echo "versions=$(echo ${v} | jq --raw-input | jq --slurp)" >> $GITHUB_OUTPUT
+          echo "versions=$(echo ${v} | jq --raw-input | jq --slurp | echo)" >> $GITHUB_OUTPUT
 
   build:
     name: Build & push docker images
