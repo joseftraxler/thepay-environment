@@ -30,8 +30,14 @@ jobs:
           if [[ -v inputs.version ]]; then
             v=inputs.version;
           else
-            v=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "^php.*/Dockerfile$" | xargs -r dirname | xargs echo);
+            v=$(
+              git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+              | grep "^php.*/Dockerfile$"
+              | xargs -r dirname
+              | xargs echo
+            );
           fi
+          echo "versions=$(echo "${v}" | jq --raw-input | jq --slurp)"
           echo "versions=$(echo "${v}" | jq --raw-input | jq --slurp)" >> $GITHUB_OUTPUT
 
   build:
