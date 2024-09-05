@@ -36,16 +36,7 @@ jobs:
             echo "changed versions after filter"
             echo "$v"
             echo "writing into versions..."
-            echo 'versions=$(
-              echo $(
-                git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
-                | grep "^php.*/Dockerfile$"
-                | xargs -r dirname
-              )
-              | jq --raw-input
-              | jq --slurp
-              | xargs echo
-            )' >> $GITHUB_OUTPUT;
+            echo 'versions=$(echo "$v" | jq --raw-input | jq --slurp)' >> $GITHUB_OUTPUT;
           fi
 
   build:
