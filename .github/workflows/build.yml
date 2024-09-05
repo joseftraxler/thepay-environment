@@ -26,7 +26,7 @@ jobs:
         - name: Detecting versions to build
           id: detected-versions
           run: |
-            git diff origin/main
+            echo ${git diff origin/main}
             echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff origin/main --name-only | grep "php.*/Dockerfile" | xargs -r dirname | uniq | echo; fi)" >> $GITHUB_OUTPUT
 
         - name: Login to docker hub
