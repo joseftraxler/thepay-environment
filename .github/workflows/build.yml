@@ -14,38 +14,44 @@ on:
     paths:
       - "*/Dockerfile"
 jobs:
-    build:
-      name: push docker image to docker hub
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.detected-versions.outputs.versions }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Detecting versions to build
+        id: detected-versions
+        run: |
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+          echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "php.*/Dockerfile" | xargs -r dirname | echo; fi)" >> $GITHUB_OUTPUT
 
-        - name: Detecting versions to build
-          id: detected-versions
-          run: |
-            git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
-            echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "php.*/Dockerfile" | xargs -r dirname | echo; fi)" >> $GITHUB_OUTPUT
-
-        - name: Login to docker hub
-          if: steps.detected-versions.outputs.versions
-          id: docker-hub
-          env:
-            username: ${{secrets.DOCKERHUB_USERNAME}}
-            password: ${{secrets.DOCKERHUB_PASSWORD}}
-          run: |
-            echo "$password" | docker login --username $username --password-stdin
-        - name: Build the docker image
-          if: steps.detected-versions.outputs.versions
-          id: build-docker-image
-          run: echo steps.detected-versions.outputs.versions | xargs -I {} docker build . -f {}/Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:{}
-        - name: Push the docker image
-          if: steps.detected-versions.outputs.versions
-          id: push-docker-image
-          run: echo steps.detected-versions.outputs.versions | xargs -I {} docker push ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:{}
-        - name: Logout from docker hub & clear credentials
-          if: steps.detected-versions.outputs.versions
-          run: |
-            docker logout
-            rm $HOME/.docker/config.json
+  build:
+    name: Build & push docker images
+    runs-on: ubuntu-latest
+    need: setup
+    strategy:
+      matrix:
+        versions: ${{ needs.setup.outputs.versions }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to docker hub
+        id: docker-hub
+        env:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_PASSWORD}}
+        run: |
+          echo "$password" | docker login --username $username --password-stdin
+      - name: Build the docker image
+        id: build-docker-image
+        run: echo steps.detected-versions.outputs.versions | xargs -I {} docker build . -f {}/Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:{}
+      - name: Push the docker image
+        id: push-docker-image
+        run: echo steps.detected-versions.outputs.versions | xargs -I {} docker push ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:{}
+      - name: Logout from docker hub & clear credentials
+        run: |
+          docker logout
+          rm $HOME/.docker/config.json
