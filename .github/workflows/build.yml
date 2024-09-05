@@ -26,7 +26,7 @@ jobs:
           id: detected-versions
           run: |
             git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
-            echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "php.*/Dockerfile" | xargs -r dirname | uniq | echo; fi)" >> $GITHUB_OUTPUT
+            echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "php.*/Dockerfile" | xargs -r dirname | echo; fi)" >> $GITHUB_OUTPUT
 
         - name: Login to docker hub
           if: steps.detected-versions.outputs.versions
