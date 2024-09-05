@@ -32,7 +32,7 @@ jobs:
   build:
     name: Build & push docker images
     runs-on: ubuntu-latest
-    need: setup
+    needs: setup
     strategy:
       matrix:
         versions: ${{ needs.setup.outputs.versions }}
