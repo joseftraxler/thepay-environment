@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
       - name: Detecting versions to build
         id: detected-versions
-        run: echo "versions=$(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Dockerfile" | xargs -r dirname | xargs; fi)" >> $GITHUB_OUTPUT
+        run: echo "versions=$($(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Dockerfile" | xargs -r dirname | xargs; fi) | jq --raw-input | jq --slurp)" >> $GITHUB_OUTPUT
 
   build:
     name: Build & push docker images
@@ -34,7 +34,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        versions: ${{ needs.setup.outputs.versions }}
+        versions: ${{ fromJson(needs.setup.outputs.versions) }}
     steps:
       - uses: actions/checkout@v4
       - name: Login to docker hub
