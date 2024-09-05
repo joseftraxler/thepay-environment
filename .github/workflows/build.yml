@@ -18,25 +18,31 @@ jobs:
     name: Setup
     runs-on: ubuntu-latest
     outputs:
-      versions: ${{ steps.detected-versions.outputs.versions }}
+      versions: ${{ steps.versions-as-json.outputs.json }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Detecting versions to build
-        id: detected-versions
+        id: detect-versions
         run: |
           echo "${{ toJSON(github.event.inputs) }}"
-          if [[ -v github.event.inputs.version ]]; then
-            v="${{ github.event.inputs.version }}";
-          else
-            v=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "^php.*/Dockerfile$" | xargs -r dirname);
-          fi
+          echo 'versions=$(
+            if [[ -v github.event.inputs.version ]]; then
+              echo "${{ github.event.inputs.version }};
+            else
+              echo $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "^php.*/Dockerfile$" | xargs -r dirname);
+            fi
+          )' >> $GITHUB_OUTPUT;
+      - name: Convert to JSON
+        id: versions-as-json
+        run: |
           echo "Versions:"
-          echo "$v"
-          echo $(echo "$v" | jq --raw-input | jq --slurp | xargs echo)
+          echo "${{ steps.detect-versions.outputs.versions }}"
+          echo $(echo "${{ steps.detect-versions.outputs.versions }}" | jq --raw-input | jq --slurp | xargs echo)
           echo "writing to output..."
-          echo 'versions=$(echo "$v" | jq --raw-input | jq --slurp | xargs echo)' >> $GITHUB_OUTPUT;
+          echo 'json=$(echo "${{ steps.detect-versions.outputs.versions }}" | jq --raw-input | jq --slurp | xargs echo)' >> $GITHUB_OUTPUT;
+
   build:
     name: Build & push docker images
     runs-on: ubuntu-latest
