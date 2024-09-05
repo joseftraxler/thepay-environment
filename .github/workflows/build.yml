@@ -34,7 +34,7 @@ jobs:
             echo $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
             echo "git diff after filter"
             echo $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "^php.*/Dockerfile$" | xargs -r dirname)
-            echo "versions=$(
+            echo 'versions=$(
               echo $(
                 git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
                 | grep "^php.*/Dockerfile$"
@@ -44,7 +44,7 @@ jobs:
               | jq --raw-input
               | jq --slurp
               | xargs echo
-            ) >> $GITHUB_OUTPUT;
+            )' >> $GITHUB_OUTPUT;
           fi
 
   build:
