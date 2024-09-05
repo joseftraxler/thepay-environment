@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
       - name: Detecting versions to build
         id: detected-versions
-        run: echo "versions=$($(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Dockerfile" | xargs -r dirname | xargs; fi) | jq --raw-input | jq --slurp)" >> $GITHUB_OUTPUT
+        run: echo "versions=$($(if [[ -v inputs.version ]]; then echo "${inputs.version}"; else git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Dockerfile" | xargs -r dirname; fi) | jq --raw-input | jq --slurp)" >> $GITHUB_OUTPUT
 
   build:
     name: Build & push docker images
