@@ -18,7 +18,7 @@ jobs:
     name: Setup
     runs-on: ubuntu-latest
     outputs:
-      versions: ${{ steps.versions-as-json.outputs.json }}
+      versions: ${{ steps.detect-versions.outputs.versions }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,23 +30,6 @@ jobs:
           git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
           | grep "^php.*/Dockerfile$"
           | xargs -r dirname
-          | xargs echo
-          )" >> $GITHUB_OUTPUT
-
-      - name: Convert to JSON
-        id: versions-as-json
-        run: >
-          echo "Versions:"
-          && echo "${{ toJson(steps.detect-versions) }}"
-          && echo $(
-          echo ${{ steps.detect-versions.outputs.versions }}
-          | jq --raw-input
-          | jq --slurp
-          | xargs echo
-          )
-          && echo "writing to output..."
-          && echo "json=$(
-          echo ${{ steps.detect-versions.outputs.versions }}
           | jq --raw-input
           | jq --slurp
           | xargs echo
