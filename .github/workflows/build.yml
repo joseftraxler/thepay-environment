@@ -36,6 +36,7 @@ jobs:
             | jq --slurp\
           )
           fi
+          echo "out=$(jq -cn --argjson versions "$VERSIONS" '{version: $versions}')"
           echo "out=$(jq -cn --argjson versions "$VERSIONS" '{version: $versions}')" >> $GITHUB_OUTPUT
 
   build:
