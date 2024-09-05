@@ -76,6 +76,7 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 RUN apt-get install -y libstdc++6
 
 
+
 COPY --from=node:16.17.0 /usr/local/bin /usr/local/bin
 COPY --from=node:16.17.0 /usr/local/lib/node_modules /usr/local/lib/node_modules
 

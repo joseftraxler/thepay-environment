@@ -38,9 +38,19 @@ jobs:
         run: >
           echo "Versions:"
           && echo "${{ toJson(steps.detect-versions) }}"
-          && echo $(jq --raw-input steps.detect-versions.outputs.versions | jq --slurp)
+          && echo $(
+          echo ${{ steps.detect-versions.outputs.versions }}
+          | jq --raw-input
+          | jq --slurp
+          | xargs echo
+          )
           && echo "writing to output..."
-          && echo 'json=$(jq --raw-input steps.detect-versions.outputs.versions | jq --slurp)' >> $GITHUB_OUTPUT
+          && echo "json=$(
+          echo ${{ steps.detect-versions.outputs.versions }}
+          | jq --raw-input
+          | jq --slurp
+          | xargs echo
+          )" >> $GITHUB_OUTPUT
 
   build:
     name: Build & push docker images
