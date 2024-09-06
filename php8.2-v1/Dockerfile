@@ -9,6 +9,8 @@ RUN apt-get install -y \
     git \
     openssh-client
 
+RUN pecl install --onlyreqdeps --force redis
+
 # xml extensions
 RUN apt-get install -y --no-install-recommends libxml2-dev \
     && docker-php-ext-install simplexml xml
@@ -52,7 +54,8 @@ RUN docker-php-ext-enable \
     sockets \
     zip \
     xml \
-    simplexml
+    simplexml \
+    redis
 
 ENV WORKDIR="/var/www/html"
 WORKDIR "${WORKDIR}"
