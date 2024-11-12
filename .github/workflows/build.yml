@@ -51,17 +51,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: Login to docker hub
         id: docker-hub
-        env:
-          username: ${{secrets.DOCKERHUB_USERNAME}}
-          password: ${{secrets.DOCKERHUB_PASSWORD}}
-        run: |
-          echo "$password" | docker login --username $username --password-stdin
+        run: docker login --username joseftraxler --password ${{ secrets.GH_DOCKER_TOKEN }} ghcr.io
       - name: Build the docker image
         id: build-docker-image
-        run: docker build . -f ${{ matrix.version }}/Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:${{ matrix.version }}
+        run: docker build . -f ${{ matrix.version }}/Dockerfile -t ghcr.io/joseftraxler/thepay-environment:${{ matrix.version }}
       - name: Push the docker image
         id: push-docker-image
-        run: docker push ${{secrets.DOCKERHUB_USERNAME}}/thepay-environment:${{ matrix.version }}
+        run: docker push ghcr.io/joseftraxler/thepay-environment:${{ matrix.version }}
       - name: Logout from docker hub & clear credentials
         run: |
           docker logout
